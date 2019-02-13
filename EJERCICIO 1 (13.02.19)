@@ -1,0 +1,17 @@
+# EJERCICIO
+# Bajar tasa de desempleo del 2005 al 2017 de México
+# Importarla a R
+# Convertirla en serie de tiempo
+# Graficar la serie de tiempo
+# Intentar insertar algunos comentarios dentro de la gráfica
+#________________________________________________________________________________
+
+tdes<- read.csv("C://Users//ALUMNO-D5//Documents//tdes.csv")
+TStd<- ts(tdes, start = 2006, end =2018, frequency = 12)
+ts.plot(TStd, col = 4, xlab ="Años", ylab="Tasa de desempleo",
+        main = "TASA DE DESEMPLEO")
+text(x=2009, y=6, labels = "Crisis")
+#   DESCRIPCIÓN:
+#   Aproximadamente a finales del 2009 se puede observar el punto 
+#   más alto de desempleo a partir de ahí se observa una tendencia
+#   decreciente pasando de un 6% a menos del 3%.
