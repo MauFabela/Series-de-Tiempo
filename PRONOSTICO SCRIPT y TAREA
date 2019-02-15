@@ -1,0 +1,20 @@
+#  La descomposición de la serie de tiempo nos permite 
+#  conocer la estacionalidad y la aleatoriedad de la ST
+#  FUNCIÓN: decompose()
+TStddesc<- decompose(TStd)
+plot(TStddesc)
+#  Por default te da el valor aditivo
+
+#  Para tener el modelo MULTIPLICATIVO
+TStddmult<- decompose(TStd, type = "mult")
+plot(TStddmult)
+#______________________________________________________________________
+#  Para saber las variables, utilizamos 
+names(TStddesc)
+v1<-TStddesc$trend
+v2<-TStddesc$seasonal
+v3<-TStddesc$random
+COMP<-v1+v2+v3
+TStd
+COMP
+#  Queda igual pero los valores iniciales y finales marca que no hay.
