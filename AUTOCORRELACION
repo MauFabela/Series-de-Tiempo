@@ -1,0 +1,25 @@
+amlx<- ts(Stock1$AMXL, start = 2018, frequency = 120)
+dcompam <- decompose(amlx)
+nostatamlx<- amlx - dcompam$seasonal
+plot(nostatamlx)
+
+#__________________________________________________________
+#  COVARIANZA
+
+OCUP<- read.csv("C://Users//ALUMNO-D5//Desktop//Time Series Mauricio//Bases//desocupacion.csv")
+sumOCU<-sum((OCUP$DESOCUPACION-mean(OCUP$DESOCUPACION))*(OCUP$TASA.TRABAJO.ASALRIADO-mean(OCUP$TASA.TRABAJO.ASALRIADO)))
+n<- length(OCUP$DESOCUPACION)
+COVAOCU<- sumOCU/(n-1)
+COVAOCU
+cov(OCUP$DESOCUPACION,OCUP$TASA.TRABAJO.ASALRIADO)
+
+#  CORRELACION
+
+DES1<- sqrt(var(OCUP$DESOCUPACION))
+DES2<- sqrt(var(OCUP$TASA.TRABAJO.ASALRIADO))
+
+CORROCU <- COVAOCU/(DES2*DES1)
+CORROCU
+cor(OCUP$DESOCUPACION,OCUP$TASA.TRABAJO.ASALRIADO)
+
+#_____________________________________________________________________
