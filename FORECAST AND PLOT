@@ -1,0 +1,40 @@
+install.packages("forecast")
+install.packages("fpp2")
+install.packages("ggplot2")
+library(forecast)
+library(fpp2)
+library(ggplot2)
+
+net <- ts(NFLX_MX$Close, start = 2018, frequency = 252 )
+
+#  METODO DE LA MEDIA (ts, núm. de pronosticos) 
+mednet<- meanf (net, 20)
+plot(mednet)
+
+#  METODO DEL INGENUO
+ingenuo<- naive(net, 20)
+plot(ingenuo)
+
+#  INGENUO ESTACIONAL
+ingest<- snaive(net,20)
+plot(ingest)
+
+#  METODO DE LA DERIVA
+der<- rwf(net, 20, drift = TRUE)
+plot(der)
+
+#  FUNCION WINDOW: 
+#  Corta a las series de tiempo window(ts, start, end=c(lastyear, lastperiod)) -note: default lastperiod=1
+
+cerveza<-window(ausbeer, start =1992, end=c(2007,4))
+
+#  PLOT
+
+autoplot(cerveza)+
+  autolayer(meanf(cerveza, h=11), series = "Media", PI=FALSE)+
+  autolayer(naive(cerveza, h=11), series = "Ingenuo", PI=FALSE)+
+  autolayer(snaive(cerveza, h=11), series = "Ingenuo estacionario", PI=FALSE)+
+  autolayer(rwf(cerveza, h=11, drift = T), series = "Deriva", PI=FALSE)+
+  ggtitle("Pronostico de producción de Cerveza")+
+  xlab("Año") + ylab("Miles de litros")+
+  guides(colour=guide_legend(title = "PRONOSTICO"))
