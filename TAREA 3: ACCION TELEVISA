@@ -1,0 +1,24 @@
+#  ____ACCIONES DE TELEVISA____
+
+actel<- ts(televisa$Cierre,start = 2018, frequency = 271)
+
+#  1) PRONOSTICO Y PLOT
+
+Pacc<- rwf(actel,h=50, drift = TRUE)
+autoplot(Pacc)
+#  Se observa una tendencia a la baja y sin estacionalidad ni ciclos
+
+#  2)GRAFICA DE RESDUALES, HISTOGRAMA Y AUTOCORRELACIÓN
+reste<- residuals(Pacc)
+autoplot(reste)
+#  Podriamos notar una estacionalidad en la media aproximada a cero,
+#  sin embargo tiene mucha variabilidad. Probablemente heterosedasticidad.
+
+gghistogram(reste)
+#  Tiene una pequeña apariencia normal, sin embrago no podría asumirse
+
+ggAcf(res)
+#  Ya que exceden los resuduos a la linea azul, se asume que hay autocorrelación
+#  entre los datos auque es interesante saber que solo en la primera parte,
+#  o sea que no es de ruido blanco y sí dependen
+#  del resultado anterior
