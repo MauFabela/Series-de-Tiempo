@@ -1,0 +1,24 @@
+#  ____POBLACIÓN EN MÉXICO____
+
+pobbase<- read.csv("C:/Users/black/Desktop/8vo/SERIES DE TIEMPO/BASES DE DATOS//poblacion.csv")
+pob<- ts(pobbase$Poblacion.total,start = 1960, frequency = 1)
+
+#  1) PRONOSTICO Y PLOT
+
+PRO<- rwf(pob,h=50, drift = TRUE)
+autoplot(PRO)
+#  Se observa una tendencia a la alza y sin estacionalidad ni ciclos
+
+#  2)GRAFICA DE RESDUALES, HISTOGRAMA Y AUTOCORRELACIÓN
+res<- residuals(PRO)
+autoplot(res)
+#  Se nota que a inicios de los 90's se tiene un residual muy grande
+#  lo que indica que la población tuvo un cambio importante aquí
+
+gghistogram(res)
+#  Se nota que no hay una normalidad en la distribución de los resuduales
+
+ggAcf(res)
+#  Ya que exceden los resuduos a la linea azul, se asume que hay autocorrelación
+#  entre los datos, o sea que no es de ruido blanco y sí dependen
+#  del resultado anterior
