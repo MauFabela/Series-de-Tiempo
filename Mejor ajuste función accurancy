@@ -1,0 +1,20 @@
+library(forecast)
+library(fpp2)
+cerveza<-window(ausbeer, start =1992, end=c(2007,4))
+beer1 <- meanf(cerveza, h=11)
+beer2 <- naive(cerveza, h=11)
+beer3 <- snaive(cerveza, h=11)
+beer4 <- rwf(cerveza, h=11, drift = T)
+
+autoplot(window(ausbeer, start =1992))+
+  autolayer(meanf(cerveza, h=11), series = "Media", PI=FALSE)+
+  autolayer(naive(cerveza, h=11), series = "Ingenuo", PI=FALSE)+
+  autolayer(snaive(cerveza, h=11), series = "Ingenuo estacionario", PI=FALSE)+
+  autolayer(rwf(cerveza, h=11, drift = T), series = "Deriva", PI=FALSE)+
+  ggtitle("Pronostico de producción de Cerveza")+
+  xlab("Año") + ylab("Miles de litros")+
+  guides(colour=guide_legend(title = "PRONOSTICO"))
+Cerv<-window(ausbeer, start =2008)
+accuracy(beer1,Cerv)
+accuracy(beer2,Cerv)
+accuracy(beer3,Cerv)
