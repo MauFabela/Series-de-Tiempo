@@ -1,0 +1,45 @@
+#  SERIE DE TIEMPO DE APPLE (ESTACIONAL)
+
+apple<-ts(AAPL$Cierre, start =2017, frequency = 250)
+
+# PLOT DE LA SERIE
+
+autoplot(apple)+
+  ggtitle("ACCIÓN APPLE")+
+  xlab("Año") + ylab("PRECIO")+
+  guides(colour=guide_legend(title = "PRONOSTICO"))
+
+#  DESCOPOSICIÓN DE LA SERIE
+
+appdes<- decompose(apple)
+plot(appdes) #Notamos una tendencia a la baja y una estacionalidad
+
+#  PRONOSTICOS
+autoplot(apple)+
+  autolayer(meanf(apple, h=70), series = "Media", PI=FALSE)+
+  autolayer(naive(apple, h=70), series = "Ingenuo", PI=FALSE)+
+  autolayer(snaive(apple, h=70), series = "Ingenuo estacionario", PI=FALSE)+
+  autolayer(rwf(apple, h=70, drift = T), series = "Deriva", PI=FALSE)+
+  ggtitle("ACCIÓN APPLE")+
+  xlab("Año") + ylab("PRECIO")+
+  guides(colour=guide_legend(title = "PRONOSTICO"))
+
+#  CORTES DE LA SERIE 80-20 (412-103)
+
+entapp<- window(apple, start =2017, end=c(2018,162))
+pruebaapp<- window(apple, start =c(2018,163))
+
+#Debido a la estacionalidad, usaré el método de ingenuo estacionario
+pronapp<-snaive(entapp, h=70)
+autoplot(pronapp)+
+  autolayer(pruebaapp)+
+  ggtitle("APPLE STOCK")+xlab("AÑO")+ylab("PRECIO")
+
+#  ERRORES PRONOSTICO
+accuracy(pronapp, pruebaapp)
+
+#  SES
+sesapp <- ses(pruebaapp, alpha=0.9, initial = "simple", h=50)
+autoplot(apple)+
+  autolayer(sesapp$fitted)+
+  ggtitle("APPLE STOCK CON SES")+xlab("AÑO")+ylab("PRECIO")
