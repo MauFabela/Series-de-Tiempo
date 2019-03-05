@@ -1,0 +1,46 @@
+#  SERIE DE TIEMPO DE NETFLIX (TENDENCIA)
+
+netflix<-ts(NFLX$Cierre, start =2017, frequency = 250)
+
+# PLOT DE LA SERIE
+
+autoplot(netflix)+
+  ggtitle("ACCIÓN NETFLIX")+
+  xlab("Año") + ylab("PRECIO")+
+  guides(colour=guide_legend(title = "PRONOSTICO"))
+
+#  DESCOPOSICIÓN DE LA SERIE
+
+netdes<- decompose(netflix)
+plot(netdes) #Notamos una tendencia a la baja
+
+#  PRONOSTICOS
+autoplot(netflix)+
+  autolayer(meanf(netflix, h=70), series = "Media", PI=FALSE)+
+  autolayer(naive(netflix, h=70), series = "Ingenuo", PI=FALSE)+
+  autolayer(snaive(netflix, h=70), series = "Ingenuo estacionario", PI=FALSE)+
+  autolayer(rwf(netflix, h=70, drift = T), series = "Deriva", PI=FALSE)+
+  ggtitle("ACCIÓN NETFLIX")+
+  xlab("Año") + ylab("PRECIO")+
+  guides(colour=guide_legend(title = "PRONOSTICO"))
+
+#  CORTES DE LA SERIE 80-20 (412-103)
+
+entnet<- window(netflix, start =2017, end=c(2018,162))
+pruebanet<- window(netflix, start =c(2018,163))
+
+#Debido a la tendencia, usaré el ingenuo estacionario
+estnetflix<-rwf(entnet, h=70, drift = T)
+autoplot(estnetflix)+
+  autolayer(pruebanet)+
+  ggtitle("NETFLIX STOCK")+xlab("AÑO")+ylab("PRECIO")
+
+#  ERRORES PRONOSTICO
+accuracy(estnetflix, pruebanet)
+
+#  SES
+sesnet <- ses(pruebanet, alpha=0.9, initial = "simple", h=50)
+autoplot(netflix)+
+  autolayer(sesnet$fitted)+
+  ggtitle("NETFLIX STOCK CON SES")+xlab("AÑO")+ylab("PRECIO")
+
