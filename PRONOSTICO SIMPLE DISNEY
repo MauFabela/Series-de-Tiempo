@@ -1,0 +1,45 @@
+#  SERIE DE TIEMPO DE DISNEY (SIN PATRON)
+
+disney<-ts(DISNEY$Cierre, start =2017, frequency = 250)
+
+# PLOT DE LA SERIE
+
+autoplot(disney)+
+  ggtitle("ACCIÓN disney")+
+  xlab("Año") + ylab("PRECIO")+
+  guides(colour=guide_legend(title = "PRONOSTICO"))
+
+#  DESCOPOSICIÓN DE LA SERIE
+
+disdes<- decompose(disney)
+plot(disdes) #Notamos una no hay tendencia y es de un componente aleatorio algo bajo
+
+#  PRONOSTICOS
+autoplot(disney)+
+  autolayer(meanf(disney, h=70), series = "Media", PI=FALSE)+
+  autolayer(naive(disney, h=70), series = "Ingenuo", PI=FALSE)+
+  autolayer(snaive(disney, h=70), series = "Ingenuo estacionario", PI=FALSE)+
+  autolayer(rwf(disney, h=70, drift = T), series = "Deriva", PI=FALSE)+
+  ggtitle("ACCIÓN DISNEY")+
+  xlab("Año") + ylab("PRECIO")+
+  guides(colour=guide_legend(title = "PRONOSTICO"))
+
+#  CORTES DE LA SERIE 80-20 (412-103)
+
+entdis<- window(disney, start =2017, end=c(2018,162))
+pruebadis<- window(disney, start =c(2018,163))
+
+#Debido a la estacionalidad, usaré el método de ingenuo estacionario
+prondis<-snaive(entdis, h=70)
+autoplot(prondis)+
+  autolayer(pruebadis)+
+  ggtitle("DISNEY STOCK")+xlab("AÑO")+ylab("PRECIO")
+
+#  ERRORES PRONOSTICO
+accuracy(prondis, pruebadis)
+
+#  SES
+sesdis <- ses(pruebadis, alpha=0.9, initial = "simple", h=50)
+autoplot(disney)+
+  autolayer(sesdis$fitted)+
+  ggtitle("DISNEY STOCK CON SES")+xlab("AÑO")+ylab("PRECIO")
