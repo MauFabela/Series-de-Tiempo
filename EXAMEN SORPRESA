@@ -1,0 +1,93 @@
+#______EJERCICIO 1________________________________________
+
+library(fpp2)
+View(ausbeer)
+pronostico <- snaive(ausbeer, h=5)
+res<- residuals(pronostico)
+autoplot(res)
+#  NORMALIDAD
+gghistogram(res)
+ #Parece una normalidad auque encontramos outlayers
+
+# RUIDO BLANCO
+ggAcf(res)
+ #  Ya que exceden los resuduos a la linea azul, se asume que hay autocorrelación
+ #  entre los datos, o sea que no es de ruido blanco y sí dependen
+ #  del resultado anterior
+
+#______EJERCICIO 2________________________________________
+
+ser1s<- snaive(WWWusage, h=50)
+ser1n<- naive(WWWusage, h=50)
+ser2s<- snaive(bricksq, h=50)
+ser2n<- naive(bricksq, h=50)
+autoplot(ser2n, PI=FALSE)+
+  autolayer(ser2s, PI=FALSE)
+autoplot(ser1s, PI=FALSE)+
+  autolayer(ser1n, PI=FALSE)
+ #En ambos casos usaré el ingenuo estacionario, peus siguen tendencias
+
+ #CALCULO DE RESIDUOS
+resser1<- residuals(ser1s)
+resser2<- residuals(ser2s)
+
+#______EJERCICIO 3________________________________________
+# a) Los buenos métodos de pronósticos deberian tener residuos
+#    distribuidos normalmente
+#    RESPUESTA: VERDADERO, pues es una variable aleatoria independiente
+
+# b) Un modelo con pequeños residuos dará un buen pronóstico
+#    RESPUESTA: VERDADERO, Pues no hay mucha diferencia en el cambio de estados
+
+# C) La mejor medida de los errores del pronóstico es MAPE
+#    RESPUESTA: VERDADERO, Pues tal vez no el mejor pero es una muy buena estimación
+
+
+#______EJERCICIO 4________________________________________
+# ¿Qué quiere decir que una serie sea de ruido blanco?
+# RESPUESTA: Que es proceso estocástico de choques aleatorios (un estado no
+#            no depende del anterior y están distribuidos normalmente)
+
+#______EJERCICIO 6________________________________________
+autoplot(ibmclose)
+
+ochibm<- window(ibmclose,start =1, end =300)
+veiibm<- window(ibmclose,start =301, end =369)
+
+autoplot(ochibm)+
+  autolayer(meanf(ochibm, h=50), series = "Media", PI=FALSE)+
+  autolayer(naive(ochibm, h=50), series = "Ingenuo", PI=FALSE)+
+  autolayer(snaive(ochibm, h=50), series = "Ingenuo estacial", PI=FALSE)+
+  autolayer(rwf(ochibm, h=50, drift = T), series = "Deriva", PI=FALSE)+
+  autolayer(veiibm, series = "prueba")
+  guides(colour=guide_legend(title = "PRONOSTICO"))
+  
+  #Yo seleccionaria el método de la deriva pues siguetendencia a la baja
+gghistogram(residuals(rwf(ochibm, h=50, drift = T)))
+shapiro.test(residuals(rwf(ochibm, h=50, drift = T)))
+  #Los residuos parecen normales, sin embargo no pasan la prueba de shaíro
+ggAcf(residuals(rwf(ochibm, h=50, drift = T)))
+  #Muestran autocorrelación, por lo tanto no es ruido blanco
+
+#______EJERCICIO 7________________________________________
+
+autoplot(hsales)
+
+ochhs<- window(hsales,start =1973, end =c(1990,7))
+veihs<- window(hsales,start =c(1990,8))
+
+autoplot(ochhs)+
+  autolayer(meanf(ochhs, h=50), series = "Media", PI=FALSE)+
+  autolayer(naive(ochhs, h=50), series = "Ingenuo", PI=FALSE)+
+  autolayer(snaive(ochhs, h=50), series = "Ingenuo estacial", PI=FALSE)+
+  autolayer(rwf(ochhs, h=50, drift = T), series = "Deriva", PI=FALSE)+
+  autolayer(veihs, series = "prueba")
+guides(colour=guide_legend(title = "PRONOSTICO"))
+
+#Yo seleccionaria el método del ingenuo estacional
+gghistogram(residuals(snaive(ochhs, h=50)))
+shapiro.test(residuals(snaive(ochhs, h=50)))
+#Los residuos sí se distribuyen normalmente
+ggAcf(residuals(snaive(ochhs, h=50)))
+#Muestran autocorrelación, por lo tanto no es ruido blanco
+
