@@ -1,0 +1,63 @@
+
+# METODO DE HOLT
+library(fpp2)
+a1<- window(ausair, start = 1990)
+pron<- holt(a1, h=5)
+autoplot(pron)
+
+# MÉTODO DE TEMDEMCIA AMORTIGUADA
+pro1<- holt(a1, h=15)
+pro2<- holt(a1,damped = TRUE, phi = .5, h=15)
+autoplot(a1)+
+  autolayer(pro1, series="Holt", PI=FALSE)+
+  autolayer(pro2, series="Amortiguado Holt", PI=FALSE)+
+  autolayer(sesp, series="SES", PI=FALSE)
+  ggtitle("Pronostico")+ xlab("AÑO")+ ylab("Pasajeros")+
+  guides(colour= guide_legend(title = "Pro"))
+
+sesp <- ses(a1, alpha=0.9, initial = "simple", h=5)
+
+e1<-tsCV(a1, ses, h=1)
+e2<-tsCV(a1, holt, h=1)
+e3<-tsCV(a1, holt,damped= TRUE, h=1)
+
+# MSE:
+mean(e1^2, na.rm = TRUE)
+mean(e2^2, na.rm = TRUE)
+mean(e3^2, na.rm = TRUE)
+
+#MAE
+# MSE:
+mean(abs(e1), na.rm = TRUE)
+mean(abs(e2), na.rm = TRUE)
+mean(abs(e3), na.rm = TRUE)
+#___________ EJERICIO_____________________________________
+pibbas<- read.csv("C://Users//ALUMNO-D5//Desktop//Time Series Mauricio//Bases//PIB.csv")
+pib<- ts(pibbas,start = 1961, frequency = 1)
+p1<- window(pib, star = 1961, end= 2005)
+
+pro1<- holt(p1, h=15)
+pro2<- holt(p1,damped = TRUE, phi = .9, h=15)
+sesp <- ses(p1, alpha=0.9, initial = "simple", h=5)
+autoplot(p1)+
+  autolayer(pro1, series="Holt", PI=FALSE)+
+  autolayer(pro2, series="Amortiguado Holt", PI=FALSE)+
+  autolayer(sesp, series="SES", PI=FALSE)
+ggtitle("Pronostico")+ xlab("AÑO")+ ylab("PIB procentual")+
+  guides(colour= guide_legend(title = "Pro"))
+
+e1<-tsCV(p1, ses, h=1)
+e2<-tsCV(p1, holt, h=1)
+e3<-tsCV(p1, holt,damped= TRUE, h=1)
+
+# MSE:
+mean(e1^2, na.rm = TRUE)
+mean(e2^2, na.rm = TRUE)
+mean(e3^2, na.rm = TRUE)
+
+#MAE
+# MSE:
+mean(abs(e1), na.rm = TRUE)
+mean(abs(e2), na.rm = TRUE)
+mean(abs(e3), na.rm = TRUE)
+
