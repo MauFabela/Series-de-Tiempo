@@ -1,0 +1,57 @@
+bim<- read.csv("C:/Users/ALUMNO-D5/Desktop/BIMBOA.csv")
+require(fpp2)
+bim[1:254,2]<-bim[254:1,2]
+bimbo<- ts(bim[,2], frequency = 254, start = 2018)
+
+#___ PASO 1: VER SI ES ESTACIONARIA__________________________
+
+#  Para revisar si una serie es estacionaria
+#  se aplica adf,test y esperamos una p-value menor a 0.05
+require(tseries)
+adf.test(bimbo)
+#  No pasa la prueba por lo tanto no es estacionaria
+
+#___ PASO 2: HACERLA ESTACIONARIA__________________________
+
+difbim<- diff(bimbo)
+autoplot(difbim)
+
+adf.test(difbim)
+#  La serie se estacionalizó pues el p-vaule es menor a 0.05
+
+#___ PASO 3: APLICAR LOS CORRELOGRAMAS (para definir p y q)__________________________
+par(mfrow= c(1,2))
+acf(difbim)  #Con 3 picos podriamos determinar p=3
+
+pacf(difbim) #Podiramos proponer una
+q=4
+
+#  NOTA: Si el acf reduce exponencialmente y con comportamiento sinuoso
+#        entonces (p,d,0)
+#        Si el pacf reduce exponencialmente y con comportamiento sinuoso
+#        entonces (0,d,q)
+
+#        Usaremos (0,d,q) poque pacf es más sinuoso
+
+
+mod1<-Arima(bimbo, order = c(0,1,1))
+mod2<-Arima(bimbo, order = c(0,1,2))
+mod3<-Arima(bimbo, order = c(0,1,3))
+mod4<-Arima(bimbo, order = c(0,1,4))
+mod1
+mod2
+mod3
+mod4
+auto.arima(bimbo)
+
+#Con base en el aICc elegimos el modelo 1
+
+#___ PASO 4: VERIFICAR RUIDO BLANCO (Prueba ljung box)__________________________
+#   RUIDO BLANCO: p-value> 0.05
+modres<- residuals(mod1)
+Box.test(modres, lag = 12, type = "Ljung-Box")
+
+pron<- forecast(mod1, h=20)
+autoplot(pron)
+
+
